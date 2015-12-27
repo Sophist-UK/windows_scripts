@@ -22,8 +22,8 @@ Goto :EOF
 If %RetainBackups% GTR 0 (
 	Set /A RetainBackups=RetainBackups-1
 ) Else (
-	Echo Removing old backup directory %*
-	RD /s /q %*
+	Echo Removing old backup directory %1
+	RD /s /q "%BackupDir%\%~1"
 )
 Goto :EOF
 
