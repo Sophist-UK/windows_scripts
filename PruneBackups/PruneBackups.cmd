@@ -5,25 +5,32 @@ Rem You should also set HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsBa
 Rem to create a new backup set every xx days (e.g. 28 days for monthly) to avoid having a single large yearly backup set.
 If "%1"=="/?" Goto :Help
 If "%2"=="/?" Goto :Help
-If Not "%3"=="" Goto :Help
+If "%3"=="/?" Goto :Help
+If Not "%4"=="" Goto :Help
 SetLocal
 Rem Default number of backups
 Set RetainBackups=2
 Set BackupDir=.
+Set LogFile=
 Rem %%1 = directory to check
-Rem %%2 = number of backups to retain (override)
-If .%2 NEQ . Set RetainBackups=%2
-If .%1 NEQ . Set BackupDir=%~1
+Rem %%2 = number of backups to retain (override default of 2)
+Rem %%3 = directory to log to (console if omitted)
+If Not "%~1"=="" Set BackupDir=%~1
+If Not "%~2"=="" Set RetainBackups=%~2
+If Not "%~3"=="" Set "LogFile=>> %3"
 
-For /F "usebackq delims=" %%a In (`dir /ad /b "%BackupDir%\Backup ????-??-?? ??????" /o-n`) Do Call :Process "%%a"
+Echo %date% %time%: %0 %* starting %LogFile%
+For /F "usebackq delims=" %%a In (`dir /ad /b "%BackupDir%\Backup Set ????-??-?? ??????" /o-n`) Do Call :Process "%%a"
+Echo %date% %time%: %0 %* ending %LogFile%
 Goto :EOF
 
 :Process
 If %RetainBackups% GTR 0 (
+	Echo Retaining current backup directory %1 %LogFile%
 	Set /A RetainBackups=RetainBackups-1
 ) Else (
-	Echo Removing old backup directory %1
-	RD /s /q "%BackupDir%\%~1"
+	Echo Removing old backup directory %1 %LogFile%
+	RD /s /q "%BackupDir%\%~1" %LogFile%
 )
 Goto :EOF
 
