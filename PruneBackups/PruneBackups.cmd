@@ -1,17 +1,14 @@
 @Echo Off
 Rem This script is designed to prune Windows backup directories keeping the most recent x directories
 Rem
-Rem You should also set HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsBackup\AutomaticFullBackup\TimePeriodInDays=dword:xx days
-Rem to create a new backup set every xx days (e.g. 28 days for monthly) to avoid having a single large yearly backup set.
+SetLocal
+Set BackupDir=.
+Set RetainBackups=2
+Set LogFile=
 If "%1"=="/?" Goto :Help
 If "%2"=="/?" Goto :Help
 If "%3"=="/?" Goto :Help
 If Not "%4"=="" Goto :Help
-SetLocal
-Rem Default number of backups
-Set RetainBackups=2
-Set BackupDir=.
-Set LogFile=
 Rem %%1 = directory to check
 Rem %%2 = number of backups to retain (override default of 2)
 Rem %%3 = directory to log to (console if omitted)
@@ -37,11 +34,12 @@ Goto :EOF
 :Help
 Echo Prunes the older Windows 7 backup directories to leave x directories remaining (default 2)
 Echo.
-Echo %0 "Directory Path" N
+Echo %0 "Directory path" N "Log file"
 Echo.
 Echo     Directory path - the base directory which contains backup
 Echo         sub-directories of form "Backup YYYY-MM-DD HHMMSS"
-Echo     N - the number of direcories to retain
+Echo     N - the number of directories to retain (default %RetainBackups%)
+Echo     Log file - a file to log messages to (default console)
 Echo.
 Echo A new directory is started with each full (or manual backup).
 Echo According to Microsoft, the default period is 365 days which
